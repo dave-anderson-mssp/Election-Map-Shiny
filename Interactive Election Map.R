@@ -4,6 +4,7 @@ library(shiny)
 library(tidyverse)
 library(leaflet)
 library(magrittr)
+library(maps)
 MASS <- read.csv("11-5 MASSCONTRIBUTIONS-csv.csv")
 
 ## According to Partys to build new dataframe
@@ -276,4 +277,5 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
 
