@@ -1,5 +1,5 @@
 
-library(plotly)
+
 library(shiny)
 library(tidyverse)
 library(leaflet)
@@ -82,33 +82,6 @@ states_centerR[states_centerR$st_abrev=="LA",]$long=-92.5
 ##########################
 
 ########################################################################################
-
-
-R <- ggplot(data = statesR) + 
-  geom_polygon(aes(x = long, y = lat, fill = log10(Donations), 
-                   group = group), color = "white") + 
-  coord_fixed(1.3) + 
-  
-  labs(title = "Donors to Massachusetts Republicans",
-       caption = "Number of Donors by State") +
-  
-  
-  scale_fill_gradient("Donations", low="pink1", 
-                      high="red4", 
-                      breaks=c(3.4, 4.7, 6),
-                      labels=c("low", "", "high") ) +
-  
-  
-  
-  theme(text = element_text(size=10),
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        
-        panel.background = element_rect(fill = "grey71", color="blue"))
 ########################################################################################
 
 ################################################################# 
@@ -183,43 +156,21 @@ states_centerD[states_centerD$st_abrev=="LA",]$long=-92.5
 
 
 #####################################
-
-D <- ggplot(data = statesD) + 
-  geom_polygon(aes(x = long, y = lat, fill = log10(Donations), 
-                   group = group), color = "white") + 
-  coord_fixed(1.3) +
-  
-  labs(title= "Donors to Massachusetts Democrats", 
-       caption = "Number of Donors by State") +
-  
-  scale_fill_gradient("Donations", low =  "lightblue1", 
-                      high = "blue4",
-                      breaks=c(4, 5.5, 7),
-                      labels=c("low","","high")) +
-  
-  
-  
-  theme(text = element_text(size=10),
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        panel.background = element_rect(fill = "gray71", color="blue"))
 #######################################################################################
-
+#SHINY
 
 # Define UI for application that draws a histogram
 ui <- pageWithSidebar(
   
   titlePanel("Donation contribution to MA"),
   
-  
+  #Select Party
   sidebarPanel(
     radioButtons("Party", label = h3("Please choose the Party"),
-                 choices = c("republic","democrat"), 
-                 selected = "republic") ),
+                 choices = c("Republican","Democrat"), 
+                 selected = "Republican"), "The map displays donation amounts from various states for each MA party candidates for the 2018 election. Colors indicate amount donated from each state. Hover over a state to view number of donors." ),
+  
+  #Creates Hover Coordinates
   mainPanel(
     div(
       style = "position:relative",
@@ -233,7 +184,7 @@ ui <- pageWithSidebar(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   output$scatterplot <- renderPlot({ 
-    if (input$Party=="republic") {
+    if (input$Party=="Republican") {
       ggplot(data = statesR) + 
         geom_polygon(aes(x = long, y = lat, fill = log10(Donations), 
                          group = group), color = "white") + 
@@ -260,7 +211,7 @@ server <- function(input, output) {
               
               panel.background = element_rect(fill = "grey71", color="blue"))
     }
-    else if (input$Party=="democrat"){
+    else if (input$Party=="Democrat"){
       ggplot(data = statesD) + 
         geom_polygon(aes(x = long, y = lat, fill = log10(Donations), 
                          group = group), color = "white") + 
@@ -289,10 +240,10 @@ server <- function(input, output) {
   
   output$hover_info <- renderUI({
     hover <- input$plot_hover
-    if (input$Party=="republic") {
+    if (input$Party=="Republican") {
       point <- nearPoints(states_centerR, hover, threshold = 100, maxpoints = 1, addDist = TRUE)
     }
-    else if (input$Party=="democrat") {
+    else if (input$Party=="Democrat") {
       point <- nearPoints(states_centerD, hover, threshold = 100, maxpoints = 1, addDist = TRUE)
     }
     if (nrow(point) == 0) return(NULL)
